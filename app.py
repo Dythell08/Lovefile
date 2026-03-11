@@ -412,16 +412,24 @@ def total_compatibility(my_type, partner_type):
     m_score = mbti_score(my_m, p_m)
     l_score = love_score(my_l, p_l)
 
-    # ★ 星座×血液型の補正（安全にここで行う）
+    # 補正
     water_signs = ['蟹座', '蠍座', '魚座']
-    if my_z in water_signs and p_b in ['O', 'A']:
-        z_score += 5
-    if p_z in water_signs and my_b in ['O', 'A']:
-        z_score += 5
+    if my_z in water_signs and p_b in ['O', 'A'] and random.random() < 0.2:
+        z_score += 1
 
+    # raw 合計
     raw = z_score + b_score + m_score + l_score
+
+    # ★ 正規化（ここに書きます）
+    MIN_TOTAL = 235
+    MAX_TOTAL = 381
+
+    percent = (raw - MIN_TOTAL) / (MAX_TOTAL - MIN_TOTAL) * 99.9
+    percent = max(0.0, min(99.9, percent))
+    percent = round(percent, 1)
+
+    # 星の計算
     stars = get_stars(raw)
-    percent = round((raw - 220) / (380 - 220) * 100, 1)
 
     return stars, raw, percent
 
@@ -433,8 +441,8 @@ def total_compatibility(my_type, partner_type):
 def home():
     best5 = []
     worst5 = []
-    all_best = []  # 全組み合わせの降順リスト
-    all_worst = []  # 全組み合わせの昇順リスト
+    all_best = []   # 全組み合わせ（降順）
+    all_worst = []  # 全組み合わせ（昇順）
     my_type = None
 
     if request.method == 'POST':
@@ -489,6 +497,8 @@ def home():
             all_best = candidates_sorted_desc  # 全リスト（高い順）
             all_worst = candidates_sorted_asc  # 全リスト（低い順）
 
+            session['candidates'] = candidates_sorted_desc
+
     elif 'my_type' in session:
         my_type = session['my_type']
 
@@ -500,6 +510,41 @@ def home():
         all_worst=all_worst,   # WORSTの下に表示する全リスト（昇順）
         my_type=my_type
     )
+
+@app.route('/rank-check', methods=['GET', 'POST'])
+def rank_check():
+    candidates = session.get('candidates')
+    my_type = session.get('my_type')
+
+    if not candidates or not my_type:
+        return "先に診断を行ってください。"
+
+    if request.method == 'POST':
+        p_z = request.form.get('p_zodiac')
+        p_b = request.form.get('p_blood')
+        p_m = request.form.get('p_mbti')
+        p_l = request.form.get('p_love')
+
+        if not all([p_z, p_b, p_m, p_l]):
+            return "相手の情報をすべて入力してください。"
+
+        target = {
+            'zodiac': p_z,
+            'blood': p_b,
+            'mbti': p_m,
+            'love': p_l
+        }
+
+        for idx, item in enumerate(candidates, start=1):
+            if (item['zodiac'] == target['zodiac'] and
+                item['blood'] == target['blood'] and
+                item['mbti'] == target['mbti'] and
+                item['love'] == target['love']):
+                return f"この相手はあなたとの相性ランキングで {idx} 位です。"
+
+        return "該当する相手が見つかりませんでした。"
+
+    return render_template('rank_check.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -304,6 +304,16 @@
         </div>
     {% endif %}
 
+<a href="/rank-check">相手の順位を調べる</a>
+{% if best5 or worst5 %}
+<div style="margin-top: 30px; text-align: center;">
+    <a href="/rank-check" class="diagnose-button">
+        相手の順位を調べる
+    </a>
+</div>
+{% endif %}
+
+
     {% if not best5 and not worst5 %}
         <div class="no-result">
             あなたのタイプを選んで「診断する」を押してください！<br>
