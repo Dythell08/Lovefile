@@ -148,6 +148,86 @@
         .external-link-item a:hover {
             text-decoration: underline; /* マウスを乗せたら下線を出す */
         }
+
+        @media screen and (max-width: 768px) {
+         /* 画面全体の調整 */
+         body {
+         justify-content: flex-start; /* 上から並べる */
+         overflow-y: auto; /* 縦スクロールを許可 */
+         height: auto;
+         }
+
+          /* ヘッダーの調整（縦並びにする） */
+         header {
+         position: static; /* 固定を解除 */
+         flex-direction: column; /* 縦並び */
+         padding: 20px;
+         align-items: center;
+         }
+
+         .logo img {
+         max-width: 150px; /* ロゴを小さく */
+         margin-bottom: 10px;
+         }
+
+         .header-right {
+         text-align: center;
+         font-size: 12px;
+         }
+
+         /* メインビジュアルの調整（縦並びにしてサイズをギュッと詰める） */
+         .hero-section {
+         padding: 0 10px; /* 横の余白を詰める */
+         margin-top: 20px; /* ヘッダーとの間隔を詰める */
+         }
+
+         .main-card {
+         flex-direction: column; /* 縦並び */
+         padding: 30px 20px; /* 余白を詰める */
+         border-radius: 20px; /* 角丸を小さく */
+         width: 100%;
+         max-width: 100%; /* 横幅いっぱいに */
+         height: auto; /* 高さを自動に */
+         min-height: auto;
+         }
+
+         /* 左側のテキストエリアの調整（中央寄せにする） */
+          .card-left {
+         width: 100%;
+         text-align: center; /* 中央寄せ */
+         margin-bottom: 20px; /* 画像との間隔を空ける */
+         }
+
+         .card-left h1 {
+         font-size: 2.2rem; /* 文字を小さく（折り返しを防ぐ） */
+         line-height: 1.3;
+         }
+
+         .card-left p {
+         font-size: 1.1rem; /* 文字を小さく */
+         margin-top: 15px;
+         }
+
+          /* ボタンの調整（小さくする） */
+         .start-btn {
+         margin-top: 25px; /* 間隔を詰める */
+         padding: 12px 40px; /* ボタンを小さく */
+         font-size: 1.0rem; /* 文字を小さく */
+         }
+
+         /* 右側の画像エリアの調整（中央寄せにする） */
+          .card-right-image {
+         width: 100%;
+         justify-content: center; /* 中央寄せ */
+         }
+
+          .card-right-image img {
+         max-width: 80%; /* 横幅を少し抑える */
+         max-height: 250px; /* 高さを低く */
+         margin: 0 auto; /* 中央寄せ */
+         border-radius: 15px; /* 角丸を付ける */
+         }
+        }
     </style>
 </head>
 <body>
