@@ -12,6 +12,45 @@ zodiac_elements = {
     '獅子座': '火', '乙女座': '地', '天秤座': '風', '蠍座': '水',
     '射手座': '火', '山羊座': '地', '水瓶座': '風', '魚座': '水'
 }
+
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
+# データベースの設定
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///feedback.db'
+db = SQLAlchemy(app)
+
+# レビューデータの形を定義
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nickname = db.Column(db.String(50), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+
+# 最初に一度だけデータベースを作成する
+with app.app_context():
+    db.create_all()
+
+# --- ここに新しいルート（ページ）を追加 ---
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        # フォームからデータを受け取る
+        new_feedback = Feedback(
+            nickname=request.form.get('nickname'),
+            rating=int(request.form.get('rating')),
+            comment=request.form.get('comment')
+        )
+        db.session.add(new_feedback)
+        db.session.commit()
+        return redirect(url_for('feedback'))
+    
+    # 全てのレビューを新しい順に取得して表示
+    feedbacks = Feedback.query.order_by(Feedback.date_posted.desc()).all()
+    return render_template('feedback.html', feedbacks=feedbacks)
+
 zodiacs = list(zodiac_elements.keys())
 blood_types = ['A', 'B', 'O', 'AB']
 mbtis = [
